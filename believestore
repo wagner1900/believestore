@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Belive Store - Geek Hub</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Press Start 2P', cursive;
+      position: relative;
+      overflow-x: hidden;
+      background: linear-gradient(120deg, #1f2937, #111827, #1f2937);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    #overlay { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+    .game-icon { position:absolute; width:32px; height:32px; opacity:0.6; animation:floatUp 12s linear infinite; }
+    @keyframes floatUp { to { transform:translateY(-120vh) rotate(360deg); opacity:0; } }
+    .shooting-star { position:absolute; width:2px; height:80px; background:linear-gradient(white,transparent); opacity:0.7; transform:rotate(45deg); animation:shooting 1s ease-out forwards; }
+    @keyframes shooting { to { transform:translate(100vw,100vh) rotate(45deg); opacity:0; } }
+    .meme-img,.card,.gallery-img { cursor:pointer; transition:transform 0.2s; }
+    .meme-img:hover,.card:hover,.gallery-img:hover { transform:scale(1.05); }
+    .card { width:80px; height:80px; background:#4B5563; display:flex; align-items:center; justify-content:center; color:transparent; font-size:1.5rem; }
+    .matched { visibility:hidden; }
+  </style>
+</head>
+<body class="text-white">
+  <!-- Header -->
+  <header class="bg-indigo-800 p-6 shadow-lg flex justify-between items-center fixed w-full z-10">
+    <h1 class="text-4xl">Belive Store</h1>
+    <nav class="flex items-center space-x-4">
+      <a href="#home" class="hover:text-indigo-300">Home</a>
+      <a href="#about" class="hover:text-indigo-300">Sobre</a>
+      <a href="#gallery" class="hover:text-indigo-300">Fotos</a>
+      <a href="#minigames" class="hover:text-indigo-300">Minigames</a>
+      <a href="#event" class="hover:text-indigo-300">Evento</a>
+      <a href="#social" class="hover:text-indigo-300">Social</a>
+      <button id="music-toggle" class="hover:text-yellow-300">🔈</button>
+    </nav>
+  </header>
+
+  <!-- Overlay & Feedback -->
+  <div id="overlay"></div>
+  <p id="meme-feedback" class="fixed bottom-4 left-4 text-yellow-300 font-bold"></p>
+
+  <!-- Home -->
+  <section id="home" class="pt-32 text-center mb-12 px-4">
+    <h2 class="text-6xl mb-4">Bem-vindo à Belive Store</h2>
+    <p class="text-xl max-w-2xl mx-auto">Explore nosso universo geek: produtos exclusivos, mini-games e eventos imperdíveis!</p>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="container mx-auto my-12 px-4">
+    <h3 class="text-4xl mb-6 text-center">Nossa História</h3>
+    <p class="text-lg max-w-3xl mx-auto leading-relaxed">Fundada em 2020 por apaixonados por cultura pop, a Belive Store nasceu do sonho de criar um espaço onde fãs pudessem se encontrar.</p>
+  </section>
+
+  <!-- Gallery -->
+  <section id="gallery" class="container mx-auto my-12 px-4">
+    <h3 class="text-4xl mb-6 text-center">Galeria</h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <img src="WhatsApp Image 2025-05-30 at 17.33.25 (1).jpeg" alt="Foto 1" class="gallery-img w-full h-48 object-cover rounded-lg">
+      <img src="WhatsApp Image 2025-05-30 at 17.33.25.jpeg" alt="Foto 2" class="gallery-img w-full h-48 object-cover rounded-lg">
+      <img src="WhatsApp Image 2025-05-30 at 17.33.26.jpeg" alt="Foto 3" class="gallery-img w-full h-48 object-cover rounded-lg">
+      <img src="WhatsApp Image 2025-05-30 at 17.33.27.jpeg" alt="Foto 4" class="gallery-img w-full h-48 object-cover rounded-lg">
+    </div>
+  </section>
+
+  <!-- Minigames -->
+  <section id="minigames" class="container mx-auto my-12 px-4">
+    <h3 class="text-4xl mb-6 text-center">Mini-games</h3>
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="p-6 bg-gray-800 rounded-lg shadow-lg text-center">
+        <h4 class="text-2xl mb-4">Quiz Geek</h4>
+        <div id="quiz-container"></div>
+        <p id="quiz-feedback" class="mt-4"></p>
+      </div>
+      <div class="p-6 bg-gray-800 rounded-lg shadow-lg text-center">
+        <h4 class="text-2xl mb-4">Memory Game</h4>
+        <div id="memory-board" class="flex flex-wrap justify-center gap-4"></div>
+        <p id="memory-feedback" class="mt-4"></p>
+      </div>
+    </div>
+  </section>
+
+    <!-- Event -->
+  <section id="event" class="container mx-auto my-12 px-4">
+    <h3 class="text-4xl mb-6 text-center">Próximos Eventos</h3>
+    <div class="space-y-6 text-center text-lg">
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h4 class="text-2xl mb-2">Feira da praça argentina </h4>
+        <p>📍 Rua Dr. Costa Araújo 800, Fortaleza, CE, 60040-620 - Fortaleza, CE</p>
+        <p>🗓️ 26 de Junho de 2025, a partir das 14:00</p>
+      </div>
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h4 class="text-2xl mb-2">Feira da praça argentina</h4>
+        <p>📍 Rua Dr. Costa Araújo 800, Fortaleza, CE, 60040-620</p>
+        <p>🗓️ 27 e 28 de Junho de 2025, a partir das 14:00</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Social -->
+  <section id="social" class="container mx-auto my-12 px-4 text-center">
+    <h3 class="text-4xl mb-6">Siga-nos nas Redes Sociais</h3>
+    <div class="flex justify-center space-x-6">
+      <a href="https://facebook.com/belivestore" target="_blank" class="hover:text-indigo-300">Facebook</a>
+      <a href="https://instagram.com/believestor.e" target="_blank" class="hover:text-indigo-300">@believestor.e</a>
+      <a href="https://twitter.com/belivestore" target="_blank" class="hover:text-indigo-300">Twitter</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-indigo-800 p-6 text-center mt-12">&copy; 2025 Belive Store. Todos os direitos reservados.</footer>
+
+  <!-- Audio -->
+  <audio id="bg-music" src="anime-239882.mp3" loop></audio>
+  <audio id="find-sound" src="anime-239882.mp3"></audio>
+
+  <!-- Scripts -->
+  <script type="module">
+    class AudioManager {
+      constructor({ musicId, fxId, toggleId }) {
+        this.bg = document.getElementById(musicId);
+        this.fx = document.getElementById(fxId);
+        this.toggle = document.getElementById(toggleId);
+        this.enabled = false;
+        this._init();
+      }
+      _init() {
+        if (!this.bg || !this.toggle || !this.fx) return;
+        this.toggle.addEventListener('click', () => {
+          this.enabled ? this.bg.pause() : this.bg.play();
+          this.toggle.textContent = (this.enabled = !this.enabled) ? '🔊' : '🔈';
+        });
+      }
+    }
+
+    class EffectSpawner {
+      constructor(overlayId, controllerSignal) {
+        this.overlay = document.getElementById(overlayId);
+        this.signal = controllerSignal;
+      }
+      spawn(cls, setupFn, interval) {
+        const loop = async () => {
+          if (this.signal.aborted) return;
+          const el = document.createElement('div');
+          el.className = cls;
+          setupFn(el);
+          el.addEventListener('animationend', () => el.remove(), { once: true });
+          this.overlay.append(el);
+          await new Promise(r => setTimeout(r, interval));
+          return loop();
+        };
+        return loop();
+      }
+    }
+
+    class MemeHunt {
+      constructor({ times, memes, feedbackId, fxId }, controllerSignal) {
+        this.times = times.map(t => t.split(':').map(Number));
+        this.memes = memes;
+        this.feedback = document.getElementById(feedbackId);
+        this.fx = document.getElementById(fxId);
+        this.signal = controllerSignal;
+      }
+      start() { this._scheduleNext(); }
+      _scheduleNext() {
+        if (this.signal.aborted) return;
+        const now = Date.now();
+        const delay = Math.min(...this.times.map(([h,m]) => {
+          const target = new Date(); target.setHours(h,m,0,0);
+          let d = target - now; return d < 0 ? d + 86400000 : d;
+        }));
+        setTimeout(() => { this._spawnMeme(); this._scheduleNext(); }, delay);
+      }
+      _spawnMeme() {
+        const img = document.createElement('img');
+        Object.assign(img, {
+          src: this.memes[Math.floor(Math.random()*this.memes.length)],
+          className: 'meme-img absolute w-24 h-24 rounded-lg',
+          style: `left:${Math.random()*(innerWidth-100)}px;top:${Math.random()*(innerHeight-100)}px`
+        });
+        img.addEventListener('click', () => { this.feedback.textContent = 'Você achou um meme! +10 pontos'; this.fx.play(); img.remove(); }, { once: true });
+        document.body.append(img);
+        setTimeout(() => img.remove(), 10000);
+      }
+    }
+
+// ====== QuizGame & MemoryGame ======
+
+// Tempo por pergunta (segundos)
+const TIME_PER_QUESTION = 30;
+
+// Dados do quiz
+const quizData = [
+  {
+    question: 'Qual o planeta conhecido como Planeta Vermelho?',
+    options: ['Terra', 'Marte', 'Júpiter', 'Saturno'],
+    answer: 1
+  },
+  {
+    question: 'Em que ano estreou a primeira trilogia Indiana Jones?',
+    options: ['1977','1981','1984','1990'],
+    answer: 1
+  },
+  {
+    question: 'Qual é o nome do escudo do Capitão América?',
+    options: ['Mjölnir','Vibranium Shield','Stormbreaker','Adamantium Shield'],
+    answer: 1
+  },
+  // → adicione mais perguntas seguindo este formato
+];
+
+class QuizGame {
+  constructor(containerId) {
+    this.container = document.getElementById(containerId);
+    this.currentIndex = 0;
+    this.score = 0;
+    this.timer = null;
+    this.init();
+  }
+
+  init() {
+    if (!this.container) return;
+    this.renderQuestion();
+  }
+
+  renderQuestion() {
+    clearInterval(this.timer);
+    const { question, options, answer } = quizData[this.currentIndex];
+    const progressPct = (this.currentIndex / quizData.length) * 100;
+
+    this.container.innerHTML = `
+      <div class="fade-in space-y-4">
+        <div class="w-full bg-gray-700 rounded mb-2 overflow-hidden">
+          <div id="countdown-bar" class="countdown-bar" style="animation-duration: ${TIME_PER_QUESTION}s"></div>
+        </div>
+        <div class="w-full bg-gray-700 h-2 rounded mb-4">
+          <div id="progress-bar" class="bg-indigo-500 h-2 rounded" style="width: ${progressPct}%"></div>
+        </div>
+        <h5 class="text-lg mb-2">${question}</h5>
+        <ul id="options-list" class="space-y-2"></ul>
+        <div id="feedback" class="mt-4 font-bold"></div>
+        <button id="next-btn" class="mt-4 bg-indigo-600 px-4 py-2 rounded hidden">Próxima ›</button>
+      </div>
+    `;
+
+    // insere opções
+    options.forEach((opt, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'w-full text-left bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded option-btn';
+      btn.textContent = opt;
+      btn.addEventListener('click', () => this.handleAnswer(idx));
+      this.container.querySelector('#options-list').appendChild(btn);
+    });
+
+    this.startTimer();
+  }
+
+  startTimer() {
+    let timeLeft = TIME_PER_QUESTION;
+    this.timer = setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(this.timer);
+        this.handleTimeout();
+      }
+    }, 1000);
+  }
+
+  handleAnswer(selected) {
+    clearInterval(this.timer);
+    const correct = quizData[this.currentIndex].answer;
+    const feedbackEl = this.container.querySelector('#feedback');
+    feedbackEl.textContent = selected === correct
+      ? '✔️ Acertou!'
+      : `❌ Errou… era “${quizData[this.currentIndex].options[correct]}”.`;
+
+    this.container.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+    this.container.querySelector('#next-btn').classList.remove('hidden');
+    this.container.querySelector('#next-btn').onclick = () => this.next();
+  }
+
+  handleTimeout() {
+    const correct = quizData[this.currentIndex].answer;
+    const feedbackEl = this.container.querySelector('#feedback');
+    feedbackEl.textContent = `⏰ Tempo esgotou! Resposta: “${quizData[this.currentIndex].options[correct]}”.`;
+    this.container.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+    this.container.querySelector('#next-btn').classList.remove('hidden');
+    this.container.querySelector('#next-btn').onclick = () => this.next();
+  }
+
+  next() {
+    this.currentIndex++;
+    if (this.currentIndex < quizData.length) {
+      this.renderQuestion();
+    } else {
+      this.showResult();
+    }
+  }
+
+  showResult() {
+    this.container.innerHTML = `
+      <h5 class="text-2xl mb-4 text-center">Quiz Concluído!</h5>
+      <p class="text-center mb-4">Você acertou ${this.score} de ${quizData.length} perguntas.</p>
+      <button id="restart-btn" class="bg-indigo-600 px-4 py-2 rounded block mx-auto">Reiniciar Quiz</button>
+    `;
+    this.container.querySelector('#restart-btn').addEventListener('click', () => {
+      this.currentIndex = 0;
+      this.score = 0;
+      this.renderQuestion();
+    });
+  }
+}
+
+class MemoryGame {
+  constructor(boardId, feedbackId) {
+    this.board = document.getElementById(boardId);
+    this.feedback = document.getElementById(feedbackId);
+    this.cards = ['A','A','B','B','C','C','D','D'];
+    this.flipped = [];
+    this.matched = 0;
+    this.init();
+  }
+
+  init() {
+    if (!this.board) return;
+    this.cards.sort(() => 0.5 - Math.random());
+    this.board.innerHTML = '';
+    this.cards.forEach(val => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.textContent = val;
+      card.addEventListener('click', () => this.flip(card, val));
+      this.board.appendChild(card);
+    });
+  }
+
+  flip(card, val) {
+    if (card.classList.contains('matched') || this.flipped.length === 2) return;
+    card.style.color = '#FFF';
+    this.flipped.push({ card, val });
+
+    if (this.flipped.length === 2) {
+      const [first, second] = this.flipped;
+      if (first.val === second.val) {
+        first.card.classList.add('matched');
+        second.card.classList.add('matched');
+        this.matched += 2;
+        if (this.matched === this.cards.length) {
+          this.feedback.textContent = 'Memory complete! +10 pontos';
+        }
+      }
+      setTimeout(() => {
+        this.flipped.forEach(f => f.card.style.color = 'transparent');
+        this.flipped = [];
+      }, 1000);
+    }
+  }
+}
+// ====== Instanciação ======
+document.addEventListener('DOMContentLoaded', () => {
+  // Quiz
+  new QuizGame('quiz-container');
+  // Memory
+  new MemoryGame('memory-board', 'memory-feedback');
+});  
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const controller = new AbortController();
+      new AudioManager({ musicId:'bg-music', fxId:'find-sound', toggleId:'music-toggle' });
+      new EffectSpawner('overlay', controller.signal).spawn('game-icon', el => {
+        const icons=['imgs/icon1.png','imgs/icon2.png','imgs/icon3.png'];
+        el.innerHTML=`<img src="${icons[Math.floor(Math.random()*icons.length)]}" />`;
+        el.style.left=`${Math.random()*innerWidth}px`; el.style.top=`${innerHeight}px`;
+      },500);
+      new EffectSpawner('overlay', controller.signal).spawn('shooting-star', el => {
+        el.style.left=`${Math.random()*innerWidth}px`; el.style.top=`${Math.random()*(innerHeight/2)}px`;
+      },800);
+      new MemeHunt({ times:['10:00','14:00','18:00','22:00'], memes:['imgs/meme1.png','imgs/meme2.png','imgs/meme3.png'], feedbackId:'meme-feedback', fxId:'find-sound' }, controller.signal).start();
+      // Inicializar QuizGame('quiz-container') e MemoryGame('memory-board','memory-feedback') aqui
+    });
+  </script>
+</body>
+</html>
